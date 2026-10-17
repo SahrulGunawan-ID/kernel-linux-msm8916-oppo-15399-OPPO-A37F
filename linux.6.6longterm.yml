@@ -1,0 +1,29 @@
+name: Clone MSM8916 Repo
+
+on:
+  workflow_dispatch:   # bisa dijalankan manual
+  push:
+    tags:
+      - 'v6.6-msm8916-*'   # jalan tiap ada tag baru
+
+jobs:
+  clone:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # biar bisa publish release
+
+    steps:
+      - name: Clone repo branch v6.6-msm8916
+        run: |
+          git clone -b v6.6-msm8916 https://github.com/hiratazx-playground/linux-msm8916-oppo-15399.git kernel-src
+
+      - name: Compress to tar.xz
+        run: |
+          tar -cJf kernel-msm8916-v6.6.tar.xz kernel-src
+
+      - name: Upload release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: kernel-msm8916-v6.6.tar.xz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
